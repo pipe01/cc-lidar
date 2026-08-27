@@ -55,7 +55,7 @@ public class CCLIDAR {
                 BlockBehaviour.Properties.of()
             ));
     public static final Supplier<BlockEntityType<LidarBlockEntity>> LIDAR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
-            "lidar_block_entity",
+            "lidar_block",
             () -> new BlockEntityType<>(
                     LidarBlockEntity::new,
                     Set.of(LIDAR_BLOCK.get()),
@@ -63,9 +63,6 @@ public class CCLIDAR {
             )
     );
     public static final DeferredItem<BlockItem> LIDAR_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("lidar_block", LIDAR_BLOCK);
-
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.cclidar"))

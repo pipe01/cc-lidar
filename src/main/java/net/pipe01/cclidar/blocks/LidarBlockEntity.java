@@ -14,26 +14,63 @@ import net.pipe01.cclidar.CCLIDAR;
 import org.joml.Vector3dc;
 
 public class LidarBlockEntity extends BlockEntity {
+    private static final float MIN_SWEEP_ANGLE = -(float)Math.PI / 2;
+    private static final float MAX_SWEEP_ANGLE = (float)Math.PI / 2;
+
     public LidarBlockEntity(BlockPos pos, BlockState blockState) {
         super(CCLIDAR.LIDAR_BLOCK_ENTITY.get(), pos, blockState);
     }
 
-    public Double getHit() {
+    // "horizontal" rotation
+    private float currentAngle = 0;
+    private boolean ignoreFluids = true;
+
+    // angle is "vertical" rotation
+    private Double hitTest(Level level, float angle, double range) {
+        Vec3 start = worldPosition.getCenter();
+        Vec3 forward = Vec3.atLowerCornerOf(getBlockState().getValue(LidarBlock.FACING).getNormal()).yRot(currentAngle).xRot(angle);
+
+        var hit = level.clip(new ClipContext(
+                start,
+                start.add(forward.scale(range)),
+                ClipContext.Block.VISUAL,
+                ignoreFluids ? ClipContext.Fluid.NONE : ClipContext.Fluid.ANY,
+                CollisionContext.empty()
+        ));
+
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            return SableCompanion.INSTANCE.rectilinearDistanceWithSubLevels(level, worldPosition.getCenter(), hit.getLocation());
+        }
+        return null;
+    }
+
+    public float getSweepAngle() {
+        return currentAngle;
+    }
+
+    public void setSweepAngle(float currentAngle) {
+        this.currentAngle = currentAngle;
+    }
+
+    public boolean isIgnoreFluids() {
+        return ignoreFluids;
+    }
+
+    public void setIgnoreFluids(boolean ignoreFluids) {
+        this.ignoreFluids = ignoreFluids;
+    }
+
+    public Double[] getHits(float fov, int steps, double range) {
         var level = getLevel();
 
         if (level != null) {
-            var hit = level.clip(new ClipContext(
-                    worldPosition.getCenter(),
-                    worldPosition.getCenter().add(Vec3.atLowerCornerOf(getBlockState().getValue(LidarBlock.FACING).getNormal()).multiply(3, 3, 3)),
-                    ClipContext.Block.VISUAL,
-                    ClipContext.Fluid.ANY,
-                    CollisionContext.empty()
-            ));
+            Double[] hits = new Double[steps];
 
-            if (hit.getType() == HitResult.Type.BLOCK) {
-                return SableCompanion.INSTANCE.rectilinearDistanceWithSubLevels(level, worldPosition.getCenter(), hit.getLocation());
+            for (int i = 0; i < steps; i++) {
+                hits[i] = hitTest(level, (fov / (steps - 1)) * i - fov / 2, range);
             }
-            return null;
+
+            return hits;
         }
 
         return null;

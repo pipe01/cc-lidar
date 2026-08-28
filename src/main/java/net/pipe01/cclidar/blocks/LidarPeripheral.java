@@ -29,12 +29,22 @@ public class LidarPeripheral implements IPeripheral {
     }
 
     @LuaFunction
-    public final void setSweepAngle(double angle) {
-        lidarBlockEntity.setSweepAngle((float)angle);
+    public final void setRotationSpeed(double speed) {
+        lidarBlockEntity.setRotationSpeed((float)speed);
+    }
+
+    @LuaFunction
+    public final void setFov(double fov) {
+        lidarBlockEntity.setFov((float)fov);
     }
 
     @LuaFunction
     public final void setIgnoreFluids(boolean ignore) {
         lidarBlockEntity.setIgnoreFluids(ignore);
+    }
+
+    @LuaFunction
+    public final float getCurrentAngle() {
+        return lidarBlockEntity.getCurrentAngle();
     }
 }

@@ -5,8 +5,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
@@ -23,24 +27,24 @@ public class LidarBlockEntity extends BlockEntity {
         super(CCLIDAR.LIDAR_BLOCK_ENTITY.get(), pos, blockState);
     }
 
-    // "horizontal" rotation
-    private float currentAngle = 0;
     private boolean ignoreFluids = true;
+    private float rotationSpeed = 1; // degrees per tick
+    private float fov = 90; // degrees
 
     // angle is "vertical" rotation
-    private Double hitTest(Level level, float angle, double range) {
+    private Double hitTest(Level level, float horAngle, float vertAngle, double range) {
         Direction facing = getBlockState().getValue(LidarBlock.FACING);
 
         Vec3 start = worldPosition.getCenter();
         Vec3 forward = Vec3.atLowerCornerOf(facing.getNormal());
 
         forward = switch (facing) {
-            case DOWN -> forward.zRot(currentAngle).xRot(-angle);
-            case UP -> forward.zRot(-currentAngle).xRot(-angle);
-            case NORTH -> forward.yRot(-currentAngle).xRot(angle);
-            case SOUTH -> forward.yRot(-currentAngle).xRot(-angle);
-            case WEST -> forward.yRot(-currentAngle).zRot(-angle);
-            case EAST -> forward.yRot(-currentAngle).zRot(angle);
+            case DOWN -> forward.zRot(horAngle).xRot(-vertAngle);
+            case UP -> forward.zRot(-horAngle).xRot(-vertAngle);
+            case NORTH -> forward.yRot(-horAngle).xRot(vertAngle);
+            case SOUTH -> forward.yRot(-horAngle).xRot(-vertAngle);
+            case WEST -> forward.yRot(-horAngle).zRot(-vertAngle);
+            case EAST -> forward.yRot(-horAngle).zRot(vertAngle);
         };
 
         var hit = level.clip(new ClipContext(
@@ -57,13 +61,38 @@ public class LidarBlockEntity extends BlockEntity {
         return null;
     }
 
-    public float getSweepAngle() {
-        return currentAngle;
+    public float getCurrentAngle() {
+        return getCurrentAngle(0);
     }
 
-    public void setSweepAngle(float currentAngle) {
-        this.currentAngle = Math.clamp(currentAngle, MIN_SWEEP_ANGLE, MAX_SWEEP_ANGLE);
-        this.setChanged();
+    public float getCurrentAngle(float partialTick) {
+        if (getLevel() != null) {
+            double t = getLevel().getGameTime() + (double)partialTick;
+            double x = 2 * Math.abs(t / (rotationSpeed * 2) - Math.floor(t / (rotationSpeed * 2) + 0.5)) * fov;
+
+            return (float)x - fov / 2;
+
+//            return (float)(t * rotationSpeed) % fov - fov / 2;
+        }
+        return 0;
+    }
+
+    public float getRotationSpeed() {
+        return rotationSpeed;
+    }
+
+    public void setRotationSpeed(float rotationSpeed) {
+        this.rotationSpeed = rotationSpeed;
+        this.updated();
+    }
+
+    public float getFov() {
+        return fov;
+    }
+
+    public void setFov(float fov) {
+        this.fov = Math.clamp(fov, 0, 180);
+        this.updated();
     }
 
     public boolean isIgnoreFluids() {
@@ -72,19 +101,28 @@ public class LidarBlockEntity extends BlockEntity {
 
     public void setIgnoreFluids(boolean ignoreFluids) {
         this.ignoreFluids = ignoreFluids;
+        this.updated();
+    }
+
+    private void updated() {
         this.setChanged();
+
+        if (this.getLevel() != null) {
+            this.getLevel().sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+        }
     }
 
     public Double[] getHits(float fov, int steps, double range) {
-        var level = getLevel();
+        Level level = getLevel();
 
         if (level != null) {
+            float horAngle = (float) Math.toRadians(getCurrentAngle());
+            float stepAngle = (float) Math.toRadians(fov / (steps - 1));
+
             Double[] hits = new Double[steps];
-
             for (int i = 0; i < steps; i++) {
-                hits[i] = hitTest(level, (fov / (steps - 1)) * i - fov / 2, range);
+                hits[i] = hitTest(level, horAngle, stepAngle * i - fov / 2, range);
             }
-
             return hits;
         }
 
@@ -96,7 +134,8 @@ public class LidarBlockEntity extends BlockEntity {
         super.loadAdditional(tag, registries);
 
         this.ignoreFluids = tag.getBoolean("ignoreFluids");
-        this.currentAngle = tag.getFloat("currentAngle");
+        this.rotationSpeed = tag.getFloat("rotationSpeed");
+        this.fov = tag.getFloat("fov");
     }
 
     @Override
@@ -104,6 +143,19 @@ public class LidarBlockEntity extends BlockEntity {
         super.saveAdditional(tag, registries);
 
         tag.putBoolean("ignoreFluids", this.ignoreFluids);
-        tag.putFloat("currentAngle", this.currentAngle);
+        tag.putFloat("rotationSpeed", this.rotationSpeed);
+        tag.putFloat("fov", this.fov);
+    }
+
+    @Override
+    public @NonNull CompoundTag getUpdateTag(HolderLookup.@NonNull Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        saveAdditional(tag, registries);
+        return tag;
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

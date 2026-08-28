@@ -32,9 +32,6 @@ public class LidarBlockEntityRenderer implements BlockEntityRenderer<LidarBlockE
     public void render(@NonNull LidarBlockEntity lidarBlockEntity, float partialTick, PoseStack poseStack, @NonNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         poseStack.pushPose();
 
-        assert lidarBlockEntity.getLevel() != null;
-        float time = lidarBlockEntity.getLevel().getGameTime() + partialTick;
-
         BlockState blockState = lidarBlockEntity.getBlockState();
         Direction facing = blockState.getValue(LidarBlock.FACING);
 
@@ -51,7 +48,7 @@ public class LidarBlockEntityRenderer implements BlockEntityRenderer<LidarBlockE
         };
 
         poseStack.translate(0.5, 0.5, 0.5);
-        poseStack.mulPose(facingRotation.mul(Axis.YP.rotationDegrees((100 * time) % 360f)));
+        poseStack.mulPose(facingRotation.mul(Axis.YN.rotationDegrees(lidarBlockEntity.getCurrentAngle(partialTick))));
         poseStack.translate(-0.5, -0.5, -0.5);
 
         RenderType renderType = RenderType.solid();

@@ -61,6 +61,23 @@ public class LidarBlockEntity extends BlockEntity {
         return null;
     }
 
+    public Double[] getHits(float fov, int steps, double range) {
+        Level level = getLevel();
+
+        if (level != null) {
+            float horAngle = (float) Math.toRadians(getCurrentAngle());
+            float stepAngle = (float) Math.toRadians(fov / (steps - 1));
+
+            Double[] hits = new Double[steps];
+            for (int i = 0; i < steps; i++) {
+                hits[i] = hitTest(level, horAngle, stepAngle * i - fov / 2, range);
+            }
+            return hits;
+        }
+
+        return null;
+    }
+
     public float getCurrentAngle() {
         return getCurrentAngle(0);
     }
@@ -110,23 +127,6 @@ public class LidarBlockEntity extends BlockEntity {
         if (this.getLevel() != null) {
             this.getLevel().sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
         }
-    }
-
-    public Double[] getHits(float fov, int steps, double range) {
-        Level level = getLevel();
-
-        if (level != null) {
-            float horAngle = (float) Math.toRadians(getCurrentAngle());
-            float stepAngle = (float) Math.toRadians(fov / (steps - 1));
-
-            Double[] hits = new Double[steps];
-            for (int i = 0; i < steps; i++) {
-                hits[i] = hitTest(level, horAngle, stepAngle * i - fov / 2, range);
-            }
-            return hits;
-        }
-
-        return null;
     }
 
     @Override

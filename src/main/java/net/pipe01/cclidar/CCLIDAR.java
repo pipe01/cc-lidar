@@ -12,16 +12,10 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -50,19 +44,19 @@ public class CCLIDAR {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     public static final DeferredBlock<LidarBlock> LIDAR_BLOCK = BLOCKS.register(
-            "lidar_block",
+            "lidar",
             registryName -> new LidarBlock(
                 BlockBehaviour.Properties.of()
             ));
     public static final Supplier<BlockEntityType<LidarBlockEntity>> LIDAR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
-            "lidar_block",
+            "lidar",
             () -> new BlockEntityType<>(
                     LidarBlockEntity::new,
                     Set.of(LIDAR_BLOCK.get()),
                     null
             )
     );
-    public static final DeferredItem<BlockItem> LIDAR_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("lidar_block", LIDAR_BLOCK);
+    public static final DeferredItem<BlockItem> LIDAR_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("lidar", LIDAR_BLOCK);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.cclidar"))

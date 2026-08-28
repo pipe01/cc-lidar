@@ -86,7 +86,8 @@ public class LidarBlockEntity extends BlockEntity {
             double t = getLevel().getGameTime() + (double)partialTick;
 
             if (backAndForth) {
-                double x = 2 * Math.abs(t / (rotationSpeed * 2) - Math.floor(t / (rotationSpeed * 2) + 0.5)) * horizontalFov;
+                float s = rotationSpeed - 1;
+                double x = 2 * Math.abs(t / (s * 2) - Math.floor(t / (s * 2) + 0.5)) * horizontalFov;
                 return (float)x - horizontalFov / 2;
             }
 

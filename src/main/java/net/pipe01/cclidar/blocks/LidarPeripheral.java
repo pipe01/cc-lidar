@@ -43,6 +43,11 @@ public class LidarPeripheral implements IPeripheral {
     }
 
     @LuaFunction
+    public final void setBackAndForth(boolean v) {
+        lidarBlockEntity.setBackAndForth(v);
+    }
+
+    @LuaFunction
     public final float getCurrentAngle() {
         return lidarBlockEntity.getCurrentAngle();
     }

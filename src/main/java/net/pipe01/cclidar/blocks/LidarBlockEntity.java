@@ -27,6 +27,7 @@ public class LidarBlockEntity extends BlockEntity {
     private boolean ignoreFluids = true;
     private float rotationSpeed = 1; // ticks per horizontal sweep
     private float horizontalFov = 90; // degrees
+    private boolean backAndForth = true;
 
     // angle is "vertical" rotation
     private Double hitTest(Level level, float horAngle, float vertAngle, double range) {
@@ -83,11 +84,14 @@ public class LidarBlockEntity extends BlockEntity {
     public float getCurrentAngle(float partialTick) {
         if (getLevel() != null) {
             double t = getLevel().getGameTime() + (double)partialTick;
-            double x = 2 * Math.abs(t / (rotationSpeed * 2) - Math.floor(t / (rotationSpeed * 2) + 0.5)) * horizontalFov;
 
-            return (float)x - horizontalFov / 2;
+            if (backAndForth) {
+                double x = 2 * Math.abs(t / (rotationSpeed * 2) - Math.floor(t / (rotationSpeed * 2) + 0.5)) * horizontalFov;
+                return (float)x - horizontalFov / 2;
+            }
 
-//            return (float)(t * rotationSpeed) % fov - fov / 2;
+            double prog = (t % rotationSpeed) / (rotationSpeed - 1);
+            return (float)prog * horizontalFov - horizontalFov / 2;
         }
         return 0;
     }
@@ -119,6 +123,15 @@ public class LidarBlockEntity extends BlockEntity {
         this.updated();
     }
 
+    public boolean isBackAndForth() {
+        return backAndForth;
+    }
+
+    public void setBackAndForth(boolean backAndForth) {
+        this.backAndForth = backAndForth;
+        this.updated();
+    }
+
     private void updated() {
         this.setChanged();
 
@@ -134,6 +147,7 @@ public class LidarBlockEntity extends BlockEntity {
         this.ignoreFluids = tag.getBoolean("ignoreFluids");
         this.rotationSpeed = tag.getFloat("rotationSpeed");
         this.horizontalFov = tag.getFloat("horizontalFov");
+        this.backAndForth = tag.getBoolean("backAndForth");
     }
 
     @Override
@@ -143,6 +157,7 @@ public class LidarBlockEntity extends BlockEntity {
         tag.putBoolean("ignoreFluids", this.ignoreFluids);
         tag.putFloat("rotationSpeed", this.rotationSpeed);
         tag.putFloat("horizontalFov", this.horizontalFov);
+        tag.putBoolean("backAndForth", this.backAndForth);
     }
 
     @Override

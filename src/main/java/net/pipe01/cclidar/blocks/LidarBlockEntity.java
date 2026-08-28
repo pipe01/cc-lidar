@@ -3,6 +3,8 @@ package net.pipe01.cclidar.blocks;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -11,6 +13,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.pipe01.cclidar.CCLIDAR;
+import org.jspecify.annotations.NonNull;
 
 public class LidarBlockEntity extends BlockEntity {
     private static final float MIN_SWEEP_ANGLE = -(float)Math.PI / 2;
@@ -60,6 +63,7 @@ public class LidarBlockEntity extends BlockEntity {
 
     public void setSweepAngle(float currentAngle) {
         this.currentAngle = Math.clamp(currentAngle, MIN_SWEEP_ANGLE, MAX_SWEEP_ANGLE);
+        this.setChanged();
     }
 
     public boolean isIgnoreFluids() {
@@ -68,6 +72,7 @@ public class LidarBlockEntity extends BlockEntity {
 
     public void setIgnoreFluids(boolean ignoreFluids) {
         this.ignoreFluids = ignoreFluids;
+        this.setChanged();
     }
 
     public Double[] getHits(float fov, int steps, double range) {
@@ -84,5 +89,21 @@ public class LidarBlockEntity extends BlockEntity {
         }
 
         return null;
+    }
+
+    @Override
+    protected void loadAdditional(@NonNull CompoundTag tag, HolderLookup.@NonNull Provider registries) {
+        super.loadAdditional(tag, registries);
+
+        this.ignoreFluids = tag.getBoolean("ignoreFluids");
+        this.currentAngle = tag.getFloat("currentAngle");
+    }
+
+    @Override
+    protected void saveAdditional(@NonNull CompoundTag tag, HolderLookup.@NonNull Provider registries) {
+        super.saveAdditional(tag, registries);
+
+        tag.putBoolean("ignoreFluids", this.ignoreFluids);
+        tag.putFloat("currentAngle", this.currentAngle);
     }
 }

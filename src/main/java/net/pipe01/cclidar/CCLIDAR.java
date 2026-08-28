@@ -5,8 +5,10 @@ import dan200.computercraft.api.peripheral.PeripheralCapability;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.pipe01.cclidar.blocks.LidarBlock;
 import net.pipe01.cclidar.blocks.LidarBlockEntity;
+import net.pipe01.cclidar.blocks.LidarBlockEntityRenderer;
 import net.pipe01.cclidar.blocks.LidarPeripheral;
 import org.slf4j.Logger;
 

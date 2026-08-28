@@ -20,16 +20,13 @@ import net.pipe01.cclidar.CCLIDAR;
 import org.jspecify.annotations.NonNull;
 
 public class LidarBlockEntity extends BlockEntity {
-    private static final float MIN_SWEEP_ANGLE = -(float)Math.PI / 2;
-    private static final float MAX_SWEEP_ANGLE = (float)Math.PI / 2;
-
     public LidarBlockEntity(BlockPos pos, BlockState blockState) {
         super(CCLIDAR.LIDAR_BLOCK_ENTITY.get(), pos, blockState);
     }
 
     private boolean ignoreFluids = true;
-    private float rotationSpeed = 1; // degrees per tick
-    private float fov = 90; // degrees
+    private float rotationSpeed = 1; // ticks per horizontal sweep
+    private float horizontalFov = 90; // degrees
 
     // angle is "vertical" rotation
     private Double hitTest(Level level, float horAngle, float vertAngle, double range) {
@@ -86,9 +83,9 @@ public class LidarBlockEntity extends BlockEntity {
     public float getCurrentAngle(float partialTick) {
         if (getLevel() != null) {
             double t = getLevel().getGameTime() + (double)partialTick;
-            double x = 2 * Math.abs(t / (rotationSpeed * 2) - Math.floor(t / (rotationSpeed * 2) + 0.5)) * fov;
+            double x = 2 * Math.abs(t / (rotationSpeed * 2) - Math.floor(t / (rotationSpeed * 2) + 0.5)) * horizontalFov;
 
-            return (float)x - fov / 2;
+            return (float)x - horizontalFov / 2;
 
 //            return (float)(t * rotationSpeed) % fov - fov / 2;
         }
@@ -104,12 +101,12 @@ public class LidarBlockEntity extends BlockEntity {
         this.updated();
     }
 
-    public float getFov() {
-        return fov;
+    public float getHorizontalFov() {
+        return horizontalFov;
     }
 
-    public void setFov(float fov) {
-        this.fov = Math.clamp(fov, 0, 180);
+    public void setHorizontalFov(float horizontalFov) {
+        this.horizontalFov = Math.clamp(horizontalFov, 0, 180);
         this.updated();
     }
 
@@ -136,7 +133,7 @@ public class LidarBlockEntity extends BlockEntity {
 
         this.ignoreFluids = tag.getBoolean("ignoreFluids");
         this.rotationSpeed = tag.getFloat("rotationSpeed");
-        this.fov = tag.getFloat("fov");
+        this.horizontalFov = tag.getFloat("horizontalFov");
     }
 
     @Override
@@ -145,7 +142,7 @@ public class LidarBlockEntity extends BlockEntity {
 
         tag.putBoolean("ignoreFluids", this.ignoreFluids);
         tag.putFloat("rotationSpeed", this.rotationSpeed);
-        tag.putFloat("fov", this.fov);
+        tag.putFloat("horizontalFov", this.horizontalFov);
     }
 
     @Override

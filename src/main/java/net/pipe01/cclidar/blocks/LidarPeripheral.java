@@ -1,7 +1,6 @@
 package net.pipe01.cclidar.blocks;
 
 import dan200.computercraft.api.lua.LuaFunction;
-import dan200.computercraft.api.peripheral.GenericPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -34,8 +33,8 @@ public class LidarPeripheral implements IPeripheral {
     }
 
     @LuaFunction
-    public final void setFov(double fov) {
-        lidarBlockEntity.setFov((float)fov);
+    public final void setHorizontalFov(double fov) {
+        lidarBlockEntity.setHorizontalFov((float)fov);
     }
 
     @LuaFunction

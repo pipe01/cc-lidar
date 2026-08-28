@@ -38,9 +38,9 @@ public class LidarBlockEntity extends BlockEntity {
             case DOWN -> forward.zRot(currentAngle).xRot(-angle);
             case UP -> forward.zRot(-currentAngle).xRot(-angle);
             case NORTH -> forward.yRot(-currentAngle).xRot(angle);
-            case SOUTH -> forward.yRot(currentAngle).xRot(angle);
+            case SOUTH -> forward.yRot(-currentAngle).xRot(-angle);
             case WEST -> forward.yRot(-currentAngle).zRot(-angle);
-            case EAST -> forward.yRot(currentAngle).zRot(-angle);
+            case EAST -> forward.yRot(-currentAngle).zRot(angle);
         };
 
         var hit = level.clip(new ClipContext(

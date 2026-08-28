@@ -2,6 +2,7 @@ package net.pipe01.cclidar.blocks;
 
 import dev.ryanhcode.sable.companion.SableCompanion;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -27,8 +28,19 @@ public class LidarBlockEntity extends BlockEntity {
 
     // angle is "vertical" rotation
     private Double hitTest(Level level, float angle, double range) {
+        Direction facing = getBlockState().getValue(LidarBlock.FACING);
+
         Vec3 start = worldPosition.getCenter();
-        Vec3 forward = Vec3.atLowerCornerOf(getBlockState().getValue(LidarBlock.FACING).getNormal()).yRot(currentAngle).xRot(angle);
+        Vec3 forward = Vec3.atLowerCornerOf(facing.getNormal());
+
+        forward = switch (facing) {
+            case DOWN -> forward.zRot(currentAngle).xRot(-angle);
+            case UP -> forward.zRot(-currentAngle).xRot(-angle);
+            case NORTH -> forward.yRot(currentAngle).xRot(angle);
+            case SOUTH -> forward.yRot(-currentAngle).xRot(angle);
+            case WEST -> forward.yRot(-currentAngle).zRot(-angle);
+            case EAST -> forward.yRot(currentAngle).zRot(-angle);
+        };
 
         var hit = level.clip(new ClipContext(
                 start,
@@ -49,7 +61,7 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     public void setSweepAngle(float currentAngle) {
-        this.currentAngle = currentAngle;
+        this.currentAngle = Math.clamp(currentAngle, MIN_SWEEP_ANGLE, MAX_SWEEP_ANGLE);
     }
 
     public boolean isIgnoreFluids() {

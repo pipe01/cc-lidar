@@ -12,9 +12,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.pipe01.cclidar.CCLIDAR;
 import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
@@ -29,6 +27,7 @@ public class LidarBlock extends Block implements EntityBlock {
             getDirectionShape(Direction.EAST),
     };
 
+    // TODO: use ORIENTATION instead?
     public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 
     public LidarBlock(Properties properties) {

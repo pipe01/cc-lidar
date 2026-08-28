@@ -2,25 +2,39 @@ package net.pipe01.cclidar.blocks;
 
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.GenericPeripheral;
+import dan200.computercraft.api.peripheral.IPeripheral;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class LidarPeripheral implements GenericPeripheral {
+public class LidarPeripheral implements IPeripheral {
+    private final LidarBlockEntity lidarBlockEntity;
+
+    public LidarPeripheral(LidarBlockEntity lidarBlockEntity) {
+        this.lidarBlockEntity = lidarBlockEntity;
+    }
+
     @Override
-    public String id() {
+    public @NonNull String getType() {
         return "lidar";
     }
 
+    @Override
+    public boolean equals(@Nullable IPeripheral iPeripheral) {
+        return iPeripheral instanceof LidarPeripheral o && lidarBlockEntity == o.lidarBlockEntity;
+    }
+
     @LuaFunction(mainThread = true)
-    public Double[] test(LidarBlockEntity lidarBlockEntity, double fov, int steps, double range) {
+    public final Double[] test(double fov, int steps, double range) {
         return lidarBlockEntity.getHits((float)fov, steps, range);
     }
 
     @LuaFunction
-    public void setSweepAngle(LidarBlockEntity lidarBlockEntity, double angle) {
+    public final void setSweepAngle(double angle) {
         lidarBlockEntity.setSweepAngle((float)angle);
     }
 
     @LuaFunction
-    public void setIgnoreFluids(LidarBlockEntity lidarBlockEntity, boolean ignore) {
+    public final void setIgnoreFluids(boolean ignore) {
         lidarBlockEntity.setIgnoreFluids(ignore);
     }
 }

@@ -1,7 +1,10 @@
 package net.pipe01.cclidar;
 
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.peripheral.PeripheralCapability;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.pipe01.cclidar.blocks.LidarBlock;
 import net.pipe01.cclidar.blocks.LidarBlockEntity;
 import net.pipe01.cclidar.blocks.LidarPeripheral;
@@ -58,13 +61,6 @@ public class CCLIDAR {
     );
     public static final DeferredItem<BlockItem> LIDAR_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("lidar", LIDAR_BLOCK);
 
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.cclidar"))
-            .icon(() -> LIDAR_BLOCK_ITEM.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(LIDAR_BLOCK_ITEM.get());
-            }).build());
-
     public CCLIDAR(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
 
@@ -78,9 +74,8 @@ public class CCLIDAR {
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
-        ComputerCraftAPI.registerGenericSource(new LidarPeripheral());
-
         modEventBus.addListener(this::addCreative);
+        modEventBus.addListener(this::registerCapabilities);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -98,10 +93,15 @@ public class CCLIDAR {
         Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
     }
 
+    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(PeripheralCapability.get(), LIDAR_BLOCK_ENTITY.get(), (b, d) -> new LidarPeripheral(b));
+    }
+
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-//        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-//            event.accept(EXAMPLE_BLOCK_ITEM);
-//        }
+        var location = event.getTabKey().location();
+        if (location.getNamespace().equals("computercraft") && location.getPath().equals("tab")) {
+            event.accept(LIDAR_BLOCK_ITEM);
+        }
     }
 
     @SubscribeEvent

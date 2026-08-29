@@ -1,9 +1,9 @@
 {
-  "block.cclidar.lidar": "LIDAR Sensor",
-  "item.cclidar.lidar": "LIDAR Sensor",
+  "block.cclidar.lidar": "LiDAR Sensor",
+  "item.cclidar.lidar": "LiDAR Sensor",
 
-  "cclidar.configuration.title": "CC: LIDAR Configs",
-  "cclidar.configuration.section.cclidar.common.toml": "CC: LIDAR Configs",
-  "cclidar.configuration.section.cclidar.common.toml.title": "CC: LIDAR Configs",
-  "cclidar.configuration.maxLidarRange": "Maximum LIDAR range"
+  "cclidar.configuration.title": "CC: LiDAR Configs",
+  "cclidar.configuration.section.cclidar.common.toml": "CC: LiDAR Configs",
+  "cclidar.configuration.section.cclidar.common.toml.title": "CC: LiDAR Configs",
+  "cclidar.configuration.maxLidarRange": "Maximum LiDAR range"
 }

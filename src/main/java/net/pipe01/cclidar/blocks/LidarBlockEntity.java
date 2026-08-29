@@ -26,7 +26,7 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     private boolean ignoreFluids = true;
-    private float rotationSpeed = 1; // ticks per horizontal sweep
+    private float rotationSpeed = 2; // ticks per horizontal sweep
     private float horizontalFov = 90; // degrees
     private boolean backAndForth = true;
 

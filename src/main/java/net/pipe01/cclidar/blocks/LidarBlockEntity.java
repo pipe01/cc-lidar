@@ -17,6 +17,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.pipe01.cclidar.CCLIDAR;
+import net.pipe01.cclidar.Config;
 import org.jspecify.annotations.NonNull;
 
 public class LidarBlockEntity extends BlockEntity {
@@ -61,6 +62,8 @@ public class LidarBlockEntity extends BlockEntity {
 
     public Double[] getHits(float fov, int steps, double range) {
         Level level = getLevel();
+
+        range = Math.clamp(range, 1, Config.MAX_LIDAR_RANGE.getAsInt());
 
         if (level != null) {
             float fovr = (float) Math.toRadians(fov);

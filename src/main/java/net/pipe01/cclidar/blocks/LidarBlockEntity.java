@@ -85,7 +85,7 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     public float getCurrentAngle(float partialTick) {
-        if (getLevel() != null) {
+        if (rotationSpeed >= 2 && getLevel() != null) {
             double t = getLevel().getGameTime() + (double)partialTick;
 
             if (backAndForth) {
@@ -105,7 +105,7 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     public void setRotationSpeed(float rotationSpeed) {
-        this.rotationSpeed = rotationSpeed;
+        this.rotationSpeed = rotationSpeed < 2 ? 0 : rotationSpeed;
         this.updated();
     }
 

@@ -26,11 +26,10 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     private boolean ignoreFluids = true;
-    private float rotationSpeed = 2; // ticks per horizontal sweep
+    private float rotationSpeed = 0; // ticks per horizontal sweep
     private float horizontalFov = 90; // degrees
     private boolean backAndForth = true;
 
-    // angle is "vertical" rotation
     private Double hitTest(Level level, float horAngle, float vertAngle, double range) {
         Direction facing = getBlockState().getValue(LidarBlock.FACING);
 

@@ -63,12 +63,13 @@ public class LidarBlockEntity extends BlockEntity {
     public Double[] getHits(float fov, int steps, double range) {
         Level level = getLevel();
 
-        range = Math.clamp(range, 1, Config.MAX_LIDAR_RANGE.getAsInt());
-
         if (level != null) {
+            range = Math.clamp(range, 1, Config.MAX_LIDAR_RANGE.getAsInt());
+            steps = Math.clamp(steps, 1, Config.MAX_VERTICAL_RESOLUTION.getAsInt());
+
             float fovr = (float) Math.toRadians(fov);
             float horAngle = (float) Math.toRadians(getCurrentAngle());
-            float stepAngle = fovr / (steps - 1);
+            float stepAngle = steps == 1 ? 0 : fovr / (steps - 1);
 
             Double[] hits = new Double[steps];
             for (int i = 0; i < steps; i++) {

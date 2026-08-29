@@ -7,6 +7,9 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LidarPeripheral implements IPeripheral {
     private final LidarBlockEntity lidarBlockEntity;
 
@@ -25,13 +28,16 @@ public class LidarPeripheral implements IPeripheral {
     }
 
     @LuaFunction(mainThread = true)
-    public final LidarBlockEntity.Hit[] test(IArguments args) throws LuaException {
+    public final Map<String, Object> test(IArguments args) throws LuaException {
         double fov = args.getDouble(0);
         int steps = args.getInt(1);
         double range = args.getDouble(2);
         int detailLevel = args.optInt(3, 0);
 
-        return lidarBlockEntity.getHits((float)fov, steps, range, detailLevel);
+        var result = new HashMap<String, Object>();
+        result.put("rays", lidarBlockEntity.getHits((float)fov, steps, range, detailLevel));
+        result.put("angle", lidarBlockEntity.getCurrentAngle());
+        return result;
     }
 
     @LuaFunction

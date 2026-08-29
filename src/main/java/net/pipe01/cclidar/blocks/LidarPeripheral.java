@@ -1,5 +1,7 @@
 package net.pipe01.cclidar.blocks;
 
+import dan200.computercraft.api.lua.IArguments;
+import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import org.jspecify.annotations.NonNull;
@@ -23,8 +25,13 @@ public class LidarPeripheral implements IPeripheral {
     }
 
     @LuaFunction(mainThread = true)
-    public final Double[] test(double fov, int steps, double range) {
-        return lidarBlockEntity.getHits((float)fov, steps, range);
+    public final LidarBlockEntity.Hit[] test(IArguments args) throws LuaException {
+        double fov = args.getDouble(0);
+        int steps = args.getInt(1);
+        double range = args.getDouble(2);
+        int detailLevel = args.optInt(3, 0);
+
+        return lidarBlockEntity.getHits((float)fov, steps, range, detailLevel);
     }
 
     @LuaFunction

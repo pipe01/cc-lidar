@@ -42,6 +42,7 @@ public class CCLIDAR {
             registryName -> new LidarBlock(
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.COLOR_YELLOW)
+                        .destroyTime(1)
             ));
     public static final Supplier<BlockEntityType<LidarBlockEntity>> LIDAR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "lidar",

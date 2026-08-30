@@ -19,7 +19,7 @@ public class LidarPeripheral implements IPeripheral {
 
     @Override
     public @NonNull String getType() {
-        return "lidar";
+        return "lidar_sensor";
     }
 
     @Override

@@ -3,6 +3,7 @@ package net.pipe01.cclidar.blocks;
 import dan200.computercraft.api.detail.BlockReference;
 import dan200.computercraft.api.detail.VanillaDetailRegistries;
 import dev.ryanhcode.sable.companion.SableCompanion;
+import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -20,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.pipe01.cclidar.CCLIDAR;
 import net.pipe01.cclidar.Config;
+import org.joml.Vector3d;
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
@@ -43,9 +45,13 @@ public class LidarBlockEntity extends BlockEntity {
         public void setDistance(double distance) {
             put("distance", distance);
         }
+
+        public void setVerticalAngle(double angle) {
+            put("verticalAngle", angle);
+        }
     }
 
-    private Hit hitTest(Level level, float horAngle, float vertAngle, double range, int detailLevel) {
+    private Hit hitTest(Level level, Vector3d center, float horAngle, float vertAngle, double range, int detailLevel) {
         Direction facing = getBlockState().getValue(LidarBlock.FACING);
 
         Vec3 start = worldPosition.getCenter();
@@ -69,8 +75,12 @@ public class LidarBlockEntity extends BlockEntity {
         ));
 
         if (hit.getType() == HitResult.Type.BLOCK) {
+            Vector3d hitPos = SableCompanion.INSTANCE.projectOutOfSubLevel(level, JOMLConversion.toJOML(hit.getLocation()));
+            double dist = center.distance(hitPos);
+
             Hit hitResult = new Hit();
-            hitResult.setDistance(SableCompanion.INSTANCE.rectilinearDistanceWithSubLevels(level, worldPosition.getCenter(), hit.getLocation()));
+            hitResult.setDistance(dist);
+            hitResult.setVerticalAngle(Math.toDegrees(vertAngle));
 
             if (detailLevel == 1) {
                 hitResult.setDetails(VanillaDetailRegistries.BLOCK_IN_WORLD.getBasicDetails(new BlockReference(level, hit.getBlockPos())));
@@ -92,11 +102,12 @@ public class LidarBlockEntity extends BlockEntity {
 
             float fovr = (float) Math.toRadians(fov);
             float horAngle = (float) Math.toRadians(getCurrentAngle());
-            float stepAngle = steps == 1 ? 0 : fovr / (steps - 1);
+            float stepAngle = fovr / (steps - 1);
+            Vector3d center = SableCompanion.INSTANCE.projectOutOfSubLevel(level, JOMLConversion.atCenterOf(getBlockPos()));
 
             Hit[] hits = new Hit[steps];
             for (int i = 0; i < steps; i++) {
-                hits[i] = hitTest(level, horAngle, stepAngle * i - fovr / 2, range, detailLevel);
+                hits[i] = hitTest(level, center, horAngle, steps == 1 ? 0 : (stepAngle * i - fovr / 2), range, detailLevel);
             }
             return hits;
         }

@@ -36,7 +36,7 @@ public class LidarPeripheral implements IPeripheral {
 
         var result = new HashMap<String, Object>();
         result.put("rays", lidarBlockEntity.getHits((float)fov, steps, range, detailLevel));
-        result.put("angle", lidarBlockEntity.getCurrentAngle());
+        result.put("horizontalAngle", lidarBlockEntity.getCurrentAngle());
         return result;
     }
 

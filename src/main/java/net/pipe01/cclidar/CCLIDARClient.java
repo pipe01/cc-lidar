@@ -22,7 +22,7 @@ public class CCLIDARClient {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
-    @SubscribeEvent // on the mod event bus only on the physical client
+    @SubscribeEvent
     static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(
                 CCLIDAR.LIDAR_BLOCK_ENTITY.get(),

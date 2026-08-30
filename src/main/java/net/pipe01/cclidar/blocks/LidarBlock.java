@@ -2,6 +2,7 @@ package net.pipe01.cclidar.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.FrontAndTop;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -28,14 +29,13 @@ public class LidarBlock extends Block implements EntityBlock {
             getDirectionShape(Direction.EAST),
     };
 
-    // TODO: use ORIENTATION instead?
-    public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
+    public static final EnumProperty<FrontAndTop> ORIENTATION = BlockStateProperties.ORIENTATION;
 
     public LidarBlock(Properties properties) {
         super(properties);
 
         this.registerDefaultState(stateDefinition.any()
-            .setValue(FACING, Direction.NORTH)
+            .setValue(ORIENTATION, FrontAndTop.NORTH_UP)
         );
     }
 
@@ -69,22 +69,35 @@ public class LidarBlock extends Block implements EntityBlock {
 
     @Override
     public @NonNull VoxelShape getShape(BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos, @NonNull CollisionContext context) {
-        return SHAPES[state.getValue(FACING).get3DDataValue()];
+        return SHAPES[state.getValue(ORIENTATION).front().get3DDataValue()];
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(ORIENTATION);
     }
 
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return stateDefinition.any().setValue(FACING, ctx.getClickedFace());
+        Direction face = ctx.getClickedFace();
+
+        FrontAndTop orientation = switch (face) {
+            case UP -> FrontAndTop.fromFrontAndTop(face, ctx.getHorizontalDirection().getOpposite());
+            case DOWN -> FrontAndTop.fromFrontAndTop(face, ctx.getHorizontalDirection());
+            default -> FrontAndTop.fromFrontAndTop(face, Direction.UP);
+        };
+
+        return stateDefinition.any().setValue(ORIENTATION, orientation);
     }
 
     @Override
     protected @NonNull BlockState rotate(@NonNull BlockState state, @NonNull Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+        FrontAndTop orientation = state.getValue(ORIENTATION);
+        FrontAndTop newOrientation = switch (orientation.front()) {
+            case UP, DOWN -> FrontAndTop.fromFrontAndTop(orientation.front(), rotation.rotate(orientation.top()));
+            default -> FrontAndTop.fromFrontAndTop(rotation.rotate(orientation.front()), orientation.top());
+        };
+        return state.setValue(ORIENTATION, newOrientation);
     }
 }

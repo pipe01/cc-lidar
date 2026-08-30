@@ -1,10 +1,16 @@
 {
   "variants": {
-    "facing=south": { "model": "cclidar:block/lidar" },
-    "facing=west": { "model": "cclidar:block/lidar", "y": 90 },
-    "facing=north": { "model": "cclidar:block/lidar", "y": 180 },
-    "facing=east": { "model": "cclidar:block/lidar", "y": 270 },
-    "facing=down": { "model": "cclidar:block/lidar", "x": -90 },
-    "facing=up": { "model": "cclidar:block/lidar", "x": 90 }
+    "orientation=south_up": { "model": "cclidar:block/lidar" },
+    "orientation=west_up": { "model": "cclidar:block/lidar", "y": 90 },
+    "orientation=north_up": { "model": "cclidar:block/lidar", "y": 180 },
+    "orientation=east_up": { "model": "cclidar:block/lidar", "y": 270 },
+    "orientation=up_south": { "model": "cclidar:block/lidar", "x": 90 },
+    "orientation=up_west": { "model": "cclidar:block/lidar", "x": 90, "y": 90 },
+    "orientation=up_north": { "model": "cclidar:block/lidar", "x": 90, "y": 180 },
+    "orientation=up_east": { "model": "cclidar:block/lidar", "x": 90, "y": 270 },
+    "orientation=down_south": { "model": "cclidar:block/lidar", "x": 270 },
+    "orientation=down_west": { "model": "cclidar:block/lidar", "x": 270, "y": 90 },
+    "orientation=down_north": { "model": "cclidar:block/lidar", "x": 270, "y": 180 },
+    "orientation=down_east": { "model": "cclidar:block/lidar", "x": 270, "y": 270 }
   }
 }

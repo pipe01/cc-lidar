@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.FrontAndTop;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -33,22 +33,35 @@ public class LidarBlockEntityRenderer implements BlockEntityRenderer<LidarBlockE
         poseStack.pushPose();
 
         BlockState blockState = lidarBlockEntity.getBlockState();
-        Direction facing = blockState.getValue(LidarBlock.FACING);
+        FrontAndTop orientation = blockState.getValue(LidarBlock.ORIENTATION);
+        Direction facing = orientation.front();
 
         Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal()).scale(-0.1f);
         poseStack.translate(normal.x, normal.y, normal.z);
 
-        Quaternionf facingRotation = switch (facing) {
+        poseStack.translate(0.5, 0.5, 0.5);
+
+        Quaternionf rotation = new Quaternionf();
+        if (facing == Direction.UP || facing == Direction.DOWN) {
+            switch (orientation.top()) {
+                case NORTH -> rotation = Axis.YP.rotationDegrees(180);
+                case WEST -> rotation = Axis.YP.rotationDegrees(270);
+                case EAST -> rotation = Axis.YP.rotationDegrees(90);
+            }
+        }
+
+        rotation = rotation.mul(switch (facing) {
             case DOWN -> Axis.XP.rotationDegrees(90);
             case UP -> Axis.XP.rotationDegrees(270);
             case NORTH -> Axis.YP.rotationDegrees(180);
             case SOUTH -> Axis.YP.rotationDegrees(0);
             case WEST -> Axis.YP.rotationDegrees(270);
             case EAST -> Axis.YP.rotationDegrees(90);
-        };
+        });
 
-        poseStack.translate(0.5, 0.5, 0.5);
-        poseStack.mulPose(facingRotation.mul(Axis.YN.rotationDegrees(lidarBlockEntity.getCurrentAngle(partialTick))));
+        rotation = rotation.mul(Axis.YN.rotationDegrees(lidarBlockEntity.getCurrentAngle(partialTick)));
+
+        poseStack.mulPose(rotation);
         poseStack.translate(-0.5, -0.5, -0.5);
 
         RenderType renderType = RenderType.solid();

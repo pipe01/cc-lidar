@@ -5,7 +5,7 @@ import dan200.computercraft.api.detail.VanillaDetailRegistries;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.FrontAndTop;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -52,18 +52,30 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     private Hit hitTest(Level level, Vector3d center, float horAngle, float vertAngle, double range, int detailLevel) {
-        Direction facing = getBlockState().getValue(LidarBlock.FACING);
+        FrontAndTop orientation = getBlockState().getValue(LidarBlock.ORIENTATION);
 
         Vec3 start = worldPosition.getCenter();
-        Vec3 forward = Vec3.atLowerCornerOf(facing.getNormal());
+        Vec3 forward = Vec3.atLowerCornerOf(orientation.front().getNormal());
 
-        forward = switch (facing) {
-            case DOWN -> forward.zRot(horAngle).xRot(-vertAngle);
-            case UP -> forward.zRot(-horAngle).xRot(-vertAngle);
+        forward = switch (orientation.front()) {
             case NORTH -> forward.yRot(-horAngle).xRot(vertAngle);
             case SOUTH -> forward.yRot(-horAngle).xRot(-vertAngle);
             case WEST -> forward.yRot(-horAngle).zRot(-vertAngle);
             case EAST -> forward.yRot(-horAngle).zRot(vertAngle);
+            case UP -> switch (orientation.top()) {
+                case NORTH -> forward.zRot(horAngle).xRot(vertAngle);
+                case SOUTH -> forward.zRot(-horAngle).xRot(-vertAngle);
+                case WEST -> forward.xRot(horAngle).zRot(-vertAngle);
+                case EAST -> forward.xRot(-horAngle).zRot(vertAngle);
+                default -> Vec3.ZERO;
+            };
+            case DOWN -> switch (orientation.top()) {
+                case NORTH -> forward.zRot(-horAngle).xRot(vertAngle);
+                case SOUTH -> forward.zRot(horAngle).xRot(-vertAngle);
+                case WEST -> forward.xRot(-horAngle).zRot(-vertAngle);
+                case EAST -> forward.xRot(horAngle).zRot(vertAngle);
+                default -> Vec3.ZERO;
+            };
         };
 
         var hit = level.clip(new ClipContext(

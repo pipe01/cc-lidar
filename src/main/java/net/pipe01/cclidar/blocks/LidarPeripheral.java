@@ -38,42 +38,42 @@ public class LidarPeripheral implements IPeripheral {
         return result;
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final void setRotationPeriod(double speed) {
         lidarBlockEntity.setRotationPeriod((float)speed);
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final void setHorizontalFov(double fov) {
         lidarBlockEntity.setHorizontalFov((float)fov);
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final void setVerticalFov(double fov) {
         lidarBlockEntity.setVerticalFov((float)fov);
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final void setRange(double range) {
         lidarBlockEntity.setRange((float)range);
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final void setIgnoreFluids(boolean ignore) {
         lidarBlockEntity.setIgnoreFluids(ignore);
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final void setBackAndForth(boolean v) {
         lidarBlockEntity.setBackAndForth(v);
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final void setShowLaser(boolean v) {
         lidarBlockEntity.setShowLaser(v);
     }
 
-    @LuaFunction
+    @LuaFunction(mainThread = true)
     public final float getCurrentAngle() {
         return lidarBlockEntity.getCurrentAngle();
     }

@@ -10,6 +10,7 @@ local range = 20
 local pixelBlockSize = 6 -- 1,2,3,4,6,9,12,18,27,36,54
 local backAndForth = true
 local ignoreFluids = false
+local showLaser = false
 
 local passedArgs = false
 while #args > 0 do
@@ -31,6 +32,8 @@ while #args > 0 do
         backAndForth = false
     elseif arg == "--ignore-fluids" then
         ignoreFluids = true
+    elseif arg == "--laser" then
+        showLaser = true
     elseif arg == "--help" then
         print("Options:")
         if supportsPixelMode then
@@ -42,6 +45,7 @@ while #args > 0 do
         print("  --range <range>    Sets the range of the sensor")
         print("  --single           Jumps from one end of the FOV to the other instead of bouncing between them")
         print("  --ignore-fluids    Sees blocks behind fluids instead of the fluid itself")
+        print("  --laser            Enables visualization of the sensor's field of view")
         return
     else
         error("Unknown argument "..arg)
@@ -74,8 +78,11 @@ local vertSteps = math.floor(height / blockSize)
 
 lidar.setRotationPeriod(horSteps)
 lidar.setHorizontalFov(fov)
+lidar.setVerticalFov(fov)
+lidar.setRange(range)
 lidar.setBackAndForth(backAndForth)
 lidar.setIgnoreFluids(ignoreFluids)
+lidar.setShowLaser(showLaser)
 
 out.clear()
 
@@ -104,7 +111,7 @@ function round(x)
 end
 
 while true do
-    local hit = lidar.test(fov, vertSteps, range, depthMode and 0 or 2)
+    local hit = lidar.test(vertSteps, depthMode and 0 or 2)
     if hit == nil then
         break
     end

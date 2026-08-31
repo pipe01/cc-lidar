@@ -29,13 +29,11 @@ public class LidarPeripheral implements IPeripheral {
 
     @LuaFunction(mainThread = true)
     public final Map<String, Object> test(IArguments args) throws LuaException {
-        double fov = args.getDouble(0);
-        int steps = args.getInt(1);
-        double range = args.getDouble(2);
-        int detailLevel = args.optInt(3, 0);
+        int steps = args.getInt(0);
+        int detailLevel = args.optInt(1, 0);
 
         var result = new HashMap<String, Object>();
-        result.put("rays", lidarBlockEntity.getHits((float)fov, steps, range, detailLevel));
+        result.put("rays", lidarBlockEntity.getHits(steps, detailLevel));
         result.put("horizontalAngle", lidarBlockEntity.getCurrentAngle());
         return result;
     }
@@ -51,6 +49,16 @@ public class LidarPeripheral implements IPeripheral {
     }
 
     @LuaFunction
+    public final void setVerticalFov(double fov) {
+        lidarBlockEntity.setVerticalFov((float)fov);
+    }
+
+    @LuaFunction
+    public final void setRange(double range) {
+        lidarBlockEntity.setRange((float)range);
+    }
+
+    @LuaFunction
     public final void setIgnoreFluids(boolean ignore) {
         lidarBlockEntity.setIgnoreFluids(ignore);
     }
@@ -58,6 +66,11 @@ public class LidarPeripheral implements IPeripheral {
     @LuaFunction
     public final void setBackAndForth(boolean v) {
         lidarBlockEntity.setBackAndForth(v);
+    }
+
+    @LuaFunction
+    public final void setShowLaser(boolean v) {
+        lidarBlockEntity.setShowLaser(v);
     }
 
     @LuaFunction

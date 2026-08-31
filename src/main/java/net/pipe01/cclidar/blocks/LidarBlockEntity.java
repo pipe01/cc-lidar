@@ -35,7 +35,10 @@ public class LidarBlockEntity extends BlockEntity {
     private boolean ignoreFluids = true;
     private float rotationPeriod = 0; // ticks per horizontal sweep
     private float horizontalFov = 90; // degrees
+    private float verticalFov = 90;
+    private float range = 10;
     private boolean backAndForth = true;
+    private boolean showLaser = false;
 
     public static class Hit extends HashMap<String, Object> {
         public void setDetails(Map<String, Object> details) {
@@ -51,7 +54,7 @@ public class LidarBlockEntity extends BlockEntity {
         }
     }
 
-    private Hit hitTest(Level level, Vector3d center, float horAngle, float vertAngle, double range, int detailLevel) {
+    private Hit hitTest(Level level, Vector3d center, float horAngle, float vertAngle, int detailLevel) {
         FrontAndTop orientation = getBlockState().getValue(LidarBlock.ORIENTATION);
 
         Vec3 start = worldPosition.getCenter();
@@ -105,7 +108,7 @@ public class LidarBlockEntity extends BlockEntity {
         return null;
     }
 
-    public Hit[] getHits(float fov, int steps, double range, int detailLevel) {
+    public Hit[] getHits(int steps, int detailLevel) {
         Level level = getLevel();
 
         if (level != null) {
@@ -114,14 +117,14 @@ public class LidarBlockEntity extends BlockEntity {
             range = Math.clamp(range, 1, Config.MAX_LIDAR_RANGE.getAsInt());
             steps = Math.clamp(steps, 1, Config.MAX_VERTICAL_RESOLUTION.getAsInt());
 
-            float fovr = (float) Math.toRadians(fov);
+            float fovr = (float) Math.toRadians(verticalFov);
             float horAngle = (float) Math.toRadians(getCurrentAngle());
             float stepAngle = fovr / (steps - 1);
             Vector3d center = SableCompanion.INSTANCE.projectOutOfSubLevel(level, JOMLConversion.atCenterOf(getBlockPos()));
 
             Hit[] hits = new Hit[steps];
             for (int i = 0; i < steps; i++) {
-                hits[i] = hitTest(level, center, horAngle, steps == 1 ? 0 : (stepAngle * i - fovr / 2), range, detailLevel);
+                hits[i] = hitTest(level, center, horAngle, steps == 1 ? 0 : (stepAngle * i - fovr / 2), detailLevel);
             }
 
             level.getProfiler().pop();
@@ -161,6 +164,24 @@ public class LidarBlockEntity extends BlockEntity {
         this.updated();
     }
 
+    public float getVerticalFov() {
+        return verticalFov;
+    }
+
+    public void setVerticalFov(float verticalFov) {
+        this.verticalFov = verticalFov;
+        this.updated();
+    }
+
+    public float getRange() {
+        return range;
+    }
+
+    public void setRange(float range) {
+        this.range = range;
+        this.updated();
+    }
+
     public void setIgnoreFluids(boolean ignoreFluids) {
         this.ignoreFluids = ignoreFluids;
         this.updated();
@@ -168,6 +189,15 @@ public class LidarBlockEntity extends BlockEntity {
 
     public void setBackAndForth(boolean backAndForth) {
         this.backAndForth = backAndForth;
+        this.updated();
+    }
+
+    public boolean isShowLaser() {
+        return showLaser;
+    }
+
+    public void setShowLaser(boolean showLaser) {
+        this.showLaser = showLaser;
         this.updated();
     }
 
@@ -186,7 +216,10 @@ public class LidarBlockEntity extends BlockEntity {
         this.ignoreFluids = tag.getBoolean("ignoreFluids");
         this.rotationPeriod = tag.getFloat("rotationPeriod");
         this.horizontalFov = tag.getFloat("horizontalFov");
+        this.verticalFov = tag.getFloat("verticalFov");
+        this.range = tag.getFloat("range");
         this.backAndForth = tag.getBoolean("backAndForth");
+        this.showLaser = tag.getBoolean("showLaser");
     }
 
     @Override
@@ -196,7 +229,10 @@ public class LidarBlockEntity extends BlockEntity {
         tag.putBoolean("ignoreFluids", this.ignoreFluids);
         tag.putFloat("rotationPeriod", this.rotationPeriod);
         tag.putFloat("horizontalFov", this.horizontalFov);
+        tag.putFloat("verticalFov", this.verticalFov);
+        tag.putFloat("range", this.range);
         tag.putBoolean("backAndForth", this.backAndForth);
+        tag.putBoolean("showLaser", this.showLaser);
     }
 
     @Override

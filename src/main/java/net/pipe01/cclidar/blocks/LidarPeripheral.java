@@ -3,6 +3,7 @@ package net.pipe01.cclidar.blocks;
 import dan200.computercraft.api.lua.IArguments;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -25,6 +26,12 @@ public class LidarPeripheral implements IPeripheral {
     @Override
     public boolean equals(@Nullable IPeripheral iPeripheral) {
         return iPeripheral instanceof LidarPeripheral o && lidarBlockEntity == o.lidarBlockEntity;
+    }
+
+    @Override
+    public void detach(@NonNull IComputerAccess computer) {
+        lidarBlockEntity.setShowLaser(false);
+        lidarBlockEntity.setRotationPeriod(0);
     }
 
     @LuaFunction(mainThread = true)

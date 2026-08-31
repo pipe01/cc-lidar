@@ -29,3 +29,4 @@ jobs:
         with:
           name: cclidar
           path: ./build/libs/cclidar-*.jar
+          archive: false

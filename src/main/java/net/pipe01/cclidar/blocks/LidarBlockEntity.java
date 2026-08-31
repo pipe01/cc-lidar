@@ -109,6 +109,8 @@ public class LidarBlockEntity extends BlockEntity {
         Level level = getLevel();
 
         if (level != null) {
+            level.getProfiler().push("lidar hit test column");
+
             range = Math.clamp(range, 1, Config.MAX_LIDAR_RANGE.getAsInt());
             steps = Math.clamp(steps, 1, Config.MAX_VERTICAL_RESOLUTION.getAsInt());
 
@@ -121,6 +123,8 @@ public class LidarBlockEntity extends BlockEntity {
             for (int i = 0; i < steps; i++) {
                 hits[i] = hitTest(level, center, horAngle, steps == 1 ? 0 : (stepAngle * i - fovr / 2), range, detailLevel);
             }
+
+            level.getProfiler().pop();
             return hits;
         }
 

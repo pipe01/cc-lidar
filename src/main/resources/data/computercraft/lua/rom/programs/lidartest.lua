@@ -8,6 +8,8 @@ local depthMode = false
 local fov = 90
 local range = 20
 local pixelBlockSize = 6 -- 1,2,3,4,6,9,12,18,27,36,54
+local backAndForth = true
+local ignoreFluids = false
 
 local passedArgs = false
 while #args > 0 do
@@ -25,6 +27,10 @@ while #args > 0 do
         range = tonumber(table.remove(args, 1))
     elseif arg == "--res" then
         pixelBlockSize = tonumber(table.remove(args, 1))
+    elseif arg == "--single" then
+        backAndForth = false
+    elseif arg == "--ignore-fluids" then
+        ignoreFluids = true
     elseif arg == "--help" then
         print("Options:")
         if supportsPixelMode then
@@ -34,6 +40,8 @@ while #args > 0 do
         print("  --depth            Enables depth visualization")
         print("  --fov <fov>        Sets the field of view of the sensor")
         print("  --range <range>    Sets the range of the sensor")
+        print("  --single           Jumps from one end of the FOV to the other instead of bouncing between them")
+        print("  --ignore-fluids    Sees blocks behind fluids instead of the fluid itself")
         return
     else
         error("Unknown argument "..arg)
@@ -66,8 +74,8 @@ local vertSteps = math.floor(height / blockSize)
 
 lidar.setRotationSpeed(horSteps)
 lidar.setHorizontalFov(fov)
-lidar.setBackAndForth(true)
-lidar.setIgnoreFluids(false)
+lidar.setBackAndForth(backAndForth)
+lidar.setIgnoreFluids(ignoreFluids)
 
 out.clear()
 

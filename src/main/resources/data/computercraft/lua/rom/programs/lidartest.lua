@@ -72,7 +72,7 @@ local blockSize = pixelsMode and pixelBlockSize or 1
 local horSteps = math.floor(width / blockSize)
 local vertSteps = math.floor(height / blockSize)
 
-lidar.setRotationSpeed(horSteps)
+lidar.setRotationPeriod(horSteps)
 lidar.setHorizontalFov(fov)
 lidar.setBackAndForth(backAndForth)
 lidar.setIgnoreFluids(ignoreFluids)

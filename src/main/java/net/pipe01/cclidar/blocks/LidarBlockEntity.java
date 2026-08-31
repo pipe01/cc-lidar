@@ -33,7 +33,7 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     private boolean ignoreFluids = true;
-    private float rotationSpeed = 0; // ticks per horizontal sweep
+    private float rotationPeriod = 0; // ticks per horizontal sweep
     private float horizontalFov = 90; // degrees
     private boolean backAndForth = true;
 
@@ -136,32 +136,24 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     public float getCurrentAngle(float partialTick) {
-        if (rotationSpeed >= 2 && getLevel() != null) {
+        if (rotationPeriod >= 2 && getLevel() != null) {
             double t = getLevel().getGameTime() + (double)partialTick;
 
             if (backAndForth) {
-                float s = rotationSpeed - 1;
+                float s = rotationPeriod - 1;
                 double x = 2 * Math.abs(t / (s * 2) - Math.floor(t / (s * 2) + 0.5)) * horizontalFov;
                 return (float)x - horizontalFov / 2;
             }
 
-            double prog = (t % rotationSpeed) / (rotationSpeed - 1);
+            double prog = (t % rotationPeriod) / (rotationPeriod - 1);
             return (float)prog * horizontalFov - horizontalFov / 2;
         }
         return 0;
     }
 
-    public float getRotationSpeed() {
-        return rotationSpeed;
-    }
-
-    public void setRotationSpeed(float rotationSpeed) {
-        this.rotationSpeed = rotationSpeed < 2 ? 0 : rotationSpeed;
+    public void setRotationPeriod(float rotationPeriod) {
+        this.rotationPeriod = rotationPeriod < 2 ? 0 : rotationPeriod;
         this.updated();
-    }
-
-    public float getHorizontalFov() {
-        return horizontalFov;
     }
 
     public void setHorizontalFov(float horizontalFov) {
@@ -169,17 +161,9 @@ public class LidarBlockEntity extends BlockEntity {
         this.updated();
     }
 
-    public boolean isIgnoreFluids() {
-        return ignoreFluids;
-    }
-
     public void setIgnoreFluids(boolean ignoreFluids) {
         this.ignoreFluids = ignoreFluids;
         this.updated();
-    }
-
-    public boolean isBackAndForth() {
-        return backAndForth;
     }
 
     public void setBackAndForth(boolean backAndForth) {
@@ -200,7 +184,7 @@ public class LidarBlockEntity extends BlockEntity {
         super.loadAdditional(tag, registries);
 
         this.ignoreFluids = tag.getBoolean("ignoreFluids");
-        this.rotationSpeed = tag.getFloat("rotationSpeed");
+        this.rotationPeriod = tag.getFloat("rotationPeriod");
         this.horizontalFov = tag.getFloat("horizontalFov");
         this.backAndForth = tag.getBoolean("backAndForth");
     }
@@ -210,7 +194,7 @@ public class LidarBlockEntity extends BlockEntity {
         super.saveAdditional(tag, registries);
 
         tag.putBoolean("ignoreFluids", this.ignoreFluids);
-        tag.putFloat("rotationSpeed", this.rotationSpeed);
+        tag.putFloat("rotationPeriod", this.rotationPeriod);
         tag.putFloat("horizontalFov", this.horizontalFov);
         tag.putBoolean("backAndForth", this.backAndForth);
     }

@@ -41,8 +41,8 @@ public class LidarPeripheral implements IPeripheral {
     }
 
     @LuaFunction
-    public final void setRotationSpeed(double speed) {
-        lidarBlockEntity.setRotationSpeed((float)speed);
+    public final void setRotationPeriod(double speed) {
+        lidarBlockEntity.setRotationPeriod((float)speed);
     }
 
     @LuaFunction

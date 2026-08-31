@@ -85,9 +85,6 @@ public class LidarBlockEntityRenderer implements BlockEntityRenderer<LidarBlockE
         FrontAndTop orientation = blockState.getValue(LidarBlock.ORIENTATION);
         Direction facing = orientation.front();
 
-        Vec3 scaledNormal = Vec3.atLowerCornerOf(facing.getNormal()).scale(-0.1f);
-        poseStack.translate(scaledNormal.x, scaledNormal.y, scaledNormal.z);
-
         poseStack.translate(0.5, 0.5, 0.5);
 
         Quaternionf rotation = new Quaternionf();

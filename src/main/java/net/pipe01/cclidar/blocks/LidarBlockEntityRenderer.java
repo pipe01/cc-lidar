@@ -39,24 +39,7 @@ public class LidarBlockEntityRenderer implements BlockEntityRenderer<LidarBlockE
             true,
             RenderType.CompositeState.builder()
                     .setShaderState(new RenderStateShard.ShaderStateShard(() -> CCLIDARClient.LASER_SHADER))
-                    .setTransparencyState(
-                            new RenderStateShard.TransparencyStateShard(
-                                    "laser_transparency",
-                                    () -> {
-                                        RenderSystem.enableBlend();
-                                        RenderSystem.blendFunc(
-                                                GlStateManager.SourceFactor.SRC_ALPHA,
-                                                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
-                                        );
-                                    },
-                                    () -> {
-                                        RenderSystem.disableBlend();
-                                        RenderSystem.defaultBlendFunc();
-                                    }
-                            )
-                    )
                     .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                    .setOverlayState(RenderStateShard.NO_OVERLAY)
                     .setCullState(RenderStateShard.CullStateShard.NO_CULL)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .createCompositeState(false)

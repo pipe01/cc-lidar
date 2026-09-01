@@ -5,4 +5,4 @@
 # Take a screenshot on orthographic mode
 # The screenshot's size should be 2560x1383
 
-magick "$1" -gravity center -crop 300x300-51+0 +repage icon.png
+magick "$1" -gravity center -crop 300x300-51-16 +repage icon.png

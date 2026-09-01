@@ -35,7 +35,7 @@ public class LidarBlockEntity extends BlockEntity {
     private boolean ignoreFluids = true;
     private float rotationPeriod = 0; // ticks per horizontal sweep
     private float horizontalFov = 90; // degrees
-    private float verticalFov = 90;
+    private float verticalFov = (float) Math.PI / 2; // radians
     private float range = 10;
     private boolean backAndForth = true;
     private boolean showLaser = false;
@@ -117,14 +117,13 @@ public class LidarBlockEntity extends BlockEntity {
             range = Math.clamp(range, 1, Config.MAX_LIDAR_RANGE.getAsInt());
             steps = Math.clamp(steps, 1, Config.MAX_VERTICAL_RESOLUTION.getAsInt());
 
-            float fovr = (float) Math.toRadians(verticalFov);
             float horAngle = (float) Math.toRadians(getCurrentAngle());
-            float stepAngle = fovr / (steps - 1);
+            float stepAngle = verticalFov / (steps - 1);
             Vector3d center = SableCompanion.INSTANCE.projectOutOfSubLevel(level, JOMLConversion.atCenterOf(getBlockPos()));
 
             Hit[] hits = new Hit[steps];
             for (int i = 0; i < steps; i++) {
-                hits[i] = hitTest(level, center, horAngle, steps == 1 ? 0 : (stepAngle * i - fovr / 2), detailLevel);
+                hits[i] = hitTest(level, center, horAngle, steps == 1 ? 0 : (stepAngle * i - verticalFov / 2), detailLevel);
             }
 
             level.getProfiler().pop();
@@ -169,7 +168,7 @@ public class LidarBlockEntity extends BlockEntity {
     }
 
     public void setVerticalFov(float verticalFov) {
-        this.verticalFov = verticalFov;
+        this.verticalFov = Math.clamp(verticalFov, 0, (float) Math.PI);
         this.updated();
     }
 

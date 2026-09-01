@@ -57,7 +57,7 @@ public class LidarPeripheral implements IPeripheral {
 
     @LuaFunction(mainThread = true)
     public final void setVerticalFov(double fov) {
-        lidarBlockEntity.setVerticalFov((float)fov);
+        lidarBlockEntity.setVerticalFov((float) Math.toRadians(fov));
     }
 
     @LuaFunction(mainThread = true)
